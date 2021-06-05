@@ -11,6 +11,8 @@ yarn run build:prod // to build the app and all dependacies
 
 yarn run start // start the production server
 
-git commit -a -m " comment  "   // to check in modified files
+git commit -am " comment  "   // to check in modified files
 // need to run git add . // If there are new files
 
+git push // goes to the default -origin GitHub
+gut push heroku master // pushes to the heroku server we set up
