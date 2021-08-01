@@ -16,3 +16,5 @@ git commit -am " comment  "   // to check in modified files
 
 git push // goes to the default -origin GitHub
 gut push heroku master // pushes to the heroku server we set up
+
+heroku open // opens the default browser with the URL for the add just pushed
