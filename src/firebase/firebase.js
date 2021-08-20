@@ -19,11 +19,12 @@ const config = {
 
   export { firebase, database as default };
   
+  
+// Tihs block gets all teh expenses and then converts them to an array
 // database.ref('expenses')
 // .once('value')
 // .then((snapshot) => {
 //     const expenses = [];
-
 //     snapshot.forEach( (childSnapshot) => {
 //         expenses.push({
 //             id: childSnapshot.key,
@@ -33,6 +34,8 @@ const config = {
 
 //     console.log(expenses);
 // });
+
+
 
 //   const onValueChange = database.ref('expenses').on('value', (snapshot) => {
 //         const expenses = [];

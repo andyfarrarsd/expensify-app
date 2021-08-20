@@ -52,3 +52,29 @@ export const removeExpense = ({ id } = {}) => ({
       id,
       updates
   });
+
+  //SET_EXPENSES
+  export const setExpenses = (expenses) => ({
+      type: 'SET_EXPENSES',
+      expenses
+  });
+
+  export const startSetExpenses = () => {
+    return (dispatch) => {
+
+        // This gets all the data from Firebase and then converts it into an expenses array
+        return database.ref('expenses').once('value').then((snapshot) => {
+            const expenses = [];
+            //snapshot is a sequence of id, val pairs, this combined then and pushes onto the array
+            snapshot.forEach( (childSnapshot) => {
+                expenses.push({
+                    id: childSnapshot.key,
+                    ...childSnapshot.val()
+                });        
+            });
+
+           // now dispatch the SET_EXPENSES action to refresh the screen with our values
+           dispatch(setExpenses(expenses));
+        });
+    };
+};

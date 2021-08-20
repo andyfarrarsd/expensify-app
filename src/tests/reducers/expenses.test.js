@@ -63,3 +63,16 @@ test('should not edit an expense if id not found', () => {
     const state = expensesReducer(expenses, action);
     expect(state).toEqual(expenses);
 });
+
+test('should set expenses', () => {
+// Set up the action object that would normally exist
+    const action = {
+        type: 'SET_EXPENSES',
+        expenses: [expenses[1]]
+    };
+    // Now test the reducer by calling it with our mocked up data
+    const state = expensesReducer(expenses, action);
+
+    // test with expect, check to see if the resulting state, set by the reducer, matches the one arry item we passed in
+    expect(state).toEqual([expenses[1]]);
+});

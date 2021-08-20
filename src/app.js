@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import AppRouter from './routers/AppRouter';
 import configureStore from './store/configureStore';
-import { addExpense } from './actions/expenses';  // for named exports i.e. not default
+import { startSetExpenses } from './actions/expenses';  // for named exports i.e. not default
 import { setTextFilter } from './actions/filters';
 import getVisibleExpenses from './selectors/expenses'; // this is default so no brackets
 import 'normalize.css/normalize.css';
@@ -19,4 +19,11 @@ const jsx = (
     </Provider>
 );
 
-ReactDOM.render(jsx, document.getElementById('app'));
+// Render something thhat says we are getting data
+ReactDOM.render(<p> Loading...</p>, document.getElementById('app'));
+
+// dipatch the get data call and use a then promise to render teh app once we ahve the data
+store.dispatch(startSetExpenses()).then(() => {
+ ReactDOM.render(jsx, document.getElementById('app'));   
+});
+

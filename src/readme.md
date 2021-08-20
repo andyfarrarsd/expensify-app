@@ -5,3 +5,7 @@ git status - View git change status
 git add - add files to staging area
 git commit - Creates a new commit with files from staging, includes commit message (-m)
 git log - view recent commits
+
+
+git remote set-url origin git@github.com:andyfarrarsd/expensify-app.git
+
