@@ -46,20 +46,35 @@ export const removeExpense = ({ id } = {}) => ({
     id
   });
 
-  // EDIT_EXPENSE
-  export const editExpense = (id, updates) => ({
+export const startRemoveExpense = ({ id } = {}) => { //If no id is passed to us then just return
+    return (dispatch) => {
+        const expenseid = 'expenses/'+id;
+        // Find the eepense and then remove it
+        return database.ref(`expenses/${id}`).remove()
+            .then(() => {
+                //console.log('Data for '+expenseid+' was removed');
+                dispatch(removeExpense( {id }));
+            })
+            .catch( (e) => {
+                console.log('Removal failed', e);
+            });
+    };
+};
+
+// EDIT_EXPENSE
+export const editExpense = (id, updates) => ({
       type: 'EDIT_EXPENSE',
       id,
       updates
-  });
+});
 
-  //SET_EXPENSES
-  export const setExpenses = (expenses) => ({
+//SET_EXPENSES
+export const setExpenses = (expenses) => ({
       type: 'SET_EXPENSES',
       expenses
-  });
+});
 
-  export const startSetExpenses = () => {
+export const startSetExpenses = () => {
     return (dispatch) => {
 
         // This gets all the data from Firebase and then converts it into an expenses array
@@ -78,3 +93,5 @@ export const removeExpense = ({ id } = {}) => ({
         });
     };
 };
+
+

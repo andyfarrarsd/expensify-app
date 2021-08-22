@@ -1,7 +1,13 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Store } from 'tough-cookie';
-import { startAddExpense, addExpense, editExpense, removeExpense, setExpenses, startSetExpenses } from '../../actions/expenses';
+import { startAddExpense, 
+        addExpense, 
+        editExpense, 
+        removeExpense, 
+        setExpenses, 
+        startSetExpenses,
+        startRemoveExpense } from '../../actions/expenses';
 import expenses from '../fixtures/expenses';
 import database from  '../../firebase/firebase';
 
@@ -23,6 +29,32 @@ test('should setup remove expense action object', () => {
         id: '123abc'
     });
 });
+
+test('Testing should remove expense from firebase and store', (done) => {
+    const store = createMockStore({}); //redux-mock-store  
+
+        // We should have all three test items in the test firebase 
+        // Test the removal of the first of the expenses
+        //expenses array is set up for each test to include all the test data matching firebase
+        const id = expenses[0].id;
+        store.dispatch(startRemoveExpense( { id } )).then(() => {
+        const actions = store.getActions();
+
+        // Expect that the stores action list has REMOVE_EXPENSE on it with our id
+        expect(actions[0]).toEqual({
+            type: 'REMOVE_EXPENSE',
+            id
+        });
+
+        // Check the database to make sure the data was saved
+        return database.ref(`expenses/${id}`).once('value');  // this returns a snaphot to the next promise
+
+    }).then((snapshot) => {  //example of promise chaining since the call above returns
+        expect(snapshot.val()).toBeFalsy();   // note if val is null then no data was found, this checks for null
+        done();
+    });
+});
+
 
 test('Should setup edit expense action object', () => {
     const action = editExpense( '123abc', { amount: 2000, note: 'this is a note'});
@@ -106,16 +138,18 @@ test('should setuo set expense action object withh data', () => {
     });
 });
 
-// test('Testing should fetch the expenses from firebase', (done) => {
-//     const store = createMockStore({}); //redux-mock-store  
+test('Testing should fetch the expenses from firebase', (done) => {
+    const store = createMockStore({}); //redux-mock-store  
 
-//     store.dispatch(startSetExpenses()).then(() => {
+    store.dispatch(startSetExpenses()).then(() => {
 
-//         const actions = store.getActions();
-//         expect(actions[0]).toEqual({
-//             type: 'SET_EXPENSES',
-//             expenses
-//         });
-//         done();
-//     });
-// });
+        const actions = store.getActions();
+        expect(actions[0]).toEqual({
+            type: 'SET_EXPENSES',
+            expenses
+        });
+        done();
+    });
+});
+
+

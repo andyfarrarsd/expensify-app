@@ -20,7 +20,7 @@ const config = {
   export { firebase, database as default };
   
   
-// Tihs block gets all teh expenses and then converts them to an array
+// This block gets all the expenses and then converts them to an array
 // database.ref('expenses')
 // .once('value')
 // .then((snapshot) => {
