@@ -7,7 +7,9 @@ import { startAddExpense,
         removeExpense, 
         setExpenses, 
         startSetExpenses,
-        startRemoveExpense } from '../../actions/expenses';
+        startRemoveExpense,
+        startEditExpense
+       } from '../../actions/expenses';
 import expenses from '../fixtures/expenses';
 import database from  '../../firebase/firebase';
 
@@ -55,7 +57,6 @@ test('Testing should remove expense from firebase and store', (done) => {
     });
 });
 
-
 test('Should setup edit expense action object', () => {
     const action = editExpense( '123abc', { amount: 2000, note: 'this is a note'});
     expect(action).toEqual({
@@ -64,6 +65,36 @@ test('Should setup edit expense action object', () => {
         updates: { amount: 2000, note: 'this is a note'}
     });
 });
+
+test('Testing should update expense in firebase and the store', (done) => {
+    const store = createMockStore({}); //redux-mock-store  
+    const updates = {
+        description: 'Mouse',
+        note: 'Tis is better than Gum'
+    };
+
+    // We should have all three test items in the test firebase 
+    // Test the updating of the first of the expenses
+    const id = expenses[0].id;
+    store.dispatch(startEditExpense( id, updates )).then(() => {
+    const actions = store.getActions();
+
+    // Expect that the stores action list has EDIT_EXPENSE on it with our id
+    expect(actions[0]).toEqual({
+        type: 'EDIT_EXPENSE',
+        id,
+        updates
+    });
+
+    // Check the database to make sure the data was saved
+    return database.ref(`expenses/${id}`).once('value');  // this returns a snaphot to the next promise
+
+    }).then((snapshot) => {  //example of promise chaining since the call above returns
+        expect(snapshot.val().description).toBe(updates.description); // should be what we passed in to update
+        done();
+    });
+});
+
 
 test('Testing setup add expense action object with provided values', () => {
     const action = addExpense(expenses[2]);

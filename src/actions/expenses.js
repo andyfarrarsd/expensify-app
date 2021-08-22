@@ -68,6 +68,22 @@ export const editExpense = (id, updates) => ({
       updates
 });
 
+export const startEditExpense = (id, updates ) => { //Should check to see If no id is passed to us then just return
+    return (dispatch) => {
+        const expenseid = 'expenses/'+id;
+        // Find the eepense and then remove it
+        return database.ref(`expenses/${id}`).update( updates )
+            .then(() => {
+                //console.log('Data updated for '+expenseid);
+                dispatch(editExpense( id, updates ));
+            })
+            .catch( (e) => {
+                console.log('Update of data failed', e);
+            });
+    };
+};
+
+
 //SET_EXPENSES
 export const setExpenses = (expenses) => ({
       type: 'SET_EXPENSES',
