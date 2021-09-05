@@ -13,6 +13,8 @@ import { startAddExpense,
 import expenses from '../fixtures/expenses';
 import database from  '../../firebase/firebase';
 
+const uid = 'thisismyteestuid';
+const defaultAuthState = { auth: { uid } };
 const createMockStore = configureMockStore([thunk]);
 
 beforeEach((done) => {
@@ -20,7 +22,7 @@ beforeEach((done) => {
     expenses.forEach(({ id , description, note, amount, createdAt }) => {
         expensesData[id] = { description, note, amount, createdAt };
     });
-    database.ref('expenses').set(expensesData).then(() => done());
+    database.ref(`users/${uid}/expenses`).set(expensesData).then(() => done());
 });
 
 
@@ -33,7 +35,7 @@ test('should setup remove expense action object', () => {
 });
 
 test('Testing should remove expense from firebase and store', (done) => {
-    const store = createMockStore({}); //redux-mock-store  
+    const store = createMockStore( defaultAuthState ); //redux-mock-store, with our test uid authoried  
 
         // We should have all three test items in the test firebase 
         // Test the removal of the first of the expenses
@@ -49,7 +51,7 @@ test('Testing should remove expense from firebase and store', (done) => {
         });
 
         // Check the database to make sure the data was saved
-        return database.ref(`expenses/${id}`).once('value');  // this returns a snaphot to the next promise
+        return database.ref(`users/${uid}/expenses/${id}`).once('value');  // this returns a snaphot to the next promise
 
     }).then((snapshot) => {  //example of promise chaining since the call above returns
         expect(snapshot.val()).toBeFalsy();   // note if val is null then no data was found, this checks for null
@@ -67,7 +69,7 @@ test('Should setup edit expense action object', () => {
 });
 
 test('Testing should update expense in firebase and the store', (done) => {
-    const store = createMockStore({}); //redux-mock-store  
+    const store = createMockStore(defaultAuthState); //redux-mock-store  
     const updates = {
         description: 'Mouse',
         note: 'Tis is better than Gum'
@@ -87,7 +89,7 @@ test('Testing should update expense in firebase and the store', (done) => {
     });
 
     // Check the database to make sure the data was saved
-    return database.ref(`expenses/${id}`).once('value');  // this returns a snaphot to the next promise
+    return database.ref(`users/${uid}/expenses/${id}`).once('value');  // this returns a snaphot to the next promise
 
     }).then((snapshot) => {  //example of promise chaining since the call above returns
         expect(snapshot.val().description).toBe(updates.description); // should be what we passed in to update
@@ -106,7 +108,7 @@ test('Testing setup add expense action object with provided values', () => {
 
 // pass in done to test case to tell jest that it includes asyncronis calls/tests
 test('Testing should add expense to database and store', (done) => {
-    const store = createMockStore({}); //redux-mock-store  
+    const store = createMockStore(defaultAuthState); //redux-mock-store  
     const expenseData = {
         description: 'Mouse',
         amount: 3000,
@@ -125,7 +127,7 @@ test('Testing should add expense to database and store', (done) => {
         });
 
         // Check the database to make sure the data was saved
-        return database.ref(`expenses/${actions[0].expense.id}`).once('value');
+        return database.ref(`users/${uid}/expenses/${actions[0].expense.id}`).once('value');
 
     }).then((snapshot) => {  //example of promise chaining since the call above returns
         expect(snapshot.val()).toEqual(expenseData);
@@ -134,7 +136,7 @@ test('Testing should add expense to database and store', (done) => {
 });
 
 test('Testing should add expense with defaults to database and store', (done) => {
-    const store = createMockStore({}); //redux-mock-store  
+    const store = createMockStore(defaultAuthState); //redux-mock-store  
     const expenseData = {
         description: '',
         note: '',
@@ -153,7 +155,7 @@ test('Testing should add expense with defaults to database and store', (done) =>
         });
 
         // Check the database to make sure the data was saved
-        return database.ref(`expenses/${actions[0].expense.id}`).once('value');
+        return database.ref(`users/${uid}/expenses/${actions[0].expense.id}`).once('value');
 
     }).then((snapshot) => {  //example of promise chaining since the call above returns
         expect(snapshot.val()).toEqual(expenseData);
@@ -170,7 +172,7 @@ test('should setuo set expense action object withh data', () => {
 });
 
 test('Testing should fetch the expenses from firebase', (done) => {
-    const store = createMockStore({}); //redux-mock-store  
+    const store = createMockStore(defaultAuthState); //redux-mock-store  
 
     store.dispatch(startSetExpenses()).then(() => {
 

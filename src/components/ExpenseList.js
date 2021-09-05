@@ -16,9 +16,6 @@ export const ExpenseList = (props) => (
     </div>
 );
 
-// {props.filters.text}
-// {props.expenses.length}
-
 // This function maps state to local props. below sets a props var that includes all our expenses
 const mapStateToProps = (state) => {
     return{

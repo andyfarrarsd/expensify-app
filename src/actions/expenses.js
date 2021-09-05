@@ -20,8 +20,10 @@ export const addExpense = (expense) => ({
     expense
 });
 
+// Async actions to send data to firebase (network database), using thunk? 
 export const startAddExpense = (expenseData = {}) => {
-    return (dispatch) => {
+    return (dispatch, getState) => {
+        const uid = getState().auth.uid;
         const {
             description = '',
             note = '',
@@ -31,7 +33,7 @@ export const startAddExpense = (expenseData = {}) => {
         const expense = { description, note, amount, createdAt };
 
         // save data to firebase and get the firebase key to use as the id in Redux
-        return database.ref('expenses').push(expense).then((ref) => {
+        return database.ref(`users/${uid}/expenses`).push(expense).then((ref) => { // uses template string must use ``  not ''
             dispatch(addExpense({
                 id: ref.key,
                 ...expense
@@ -47,12 +49,11 @@ export const removeExpense = ({ id } = {}) => ({
   });
 
 export const startRemoveExpense = ({ id } = {}) => { //If no id is passed to us then just return
-    return (dispatch) => {
-        const expenseid = 'expenses/'+id;
+    return (dispatch,getState) => {
+        const uid = getState().auth.uid;
         // Find the eepense and then remove it
-        return database.ref(`expenses/${id}`).remove()
+        return database.ref(`users/${uid}/expenses/${id}`).remove()
             .then(() => {
-                //console.log('Data for '+expenseid+' was removed');
                 dispatch(removeExpense( {id }));
             })
             .catch( (e) => {
@@ -69,12 +70,11 @@ export const editExpense = (id, updates) => ({
 });
 
 export const startEditExpense = (id, updates ) => { //Should check to see If no id is passed to us then just return
-    return (dispatch) => {
-        const expenseid = 'expenses/'+id;
+    return (dispatch, getState) => {
+        const uid = getState().auth.uid;
         // Find the eepense and then remove it
-        return database.ref(`expenses/${id}`).update( updates )
+        return database.ref(`users/${uid}/expenses/${id}`).update( updates )
             .then(() => {
-                //console.log('Data updated for '+expenseid);
                 dispatch(editExpense( id, updates ));
             })
             .catch( (e) => {
@@ -91,10 +91,10 @@ export const setExpenses = (expenses) => ({
 });
 
 export const startSetExpenses = () => {
-    return (dispatch) => {
-
+    return (dispatch, getState) => {
+        const uid = getState().auth.uid;
         // This gets all the data from Firebase and then converts it into an expenses array
-        return database.ref('expenses').once('value').then((snapshot) => {
+        return database.ref(`users/${uid}/expenses`).once('value').then((snapshot) => {
             const expenses = [];
             //snapshot is a sequence of id, val pairs, this combined then and pushes onto the array
             snapshot.forEach( (childSnapshot) => {
